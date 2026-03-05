@@ -1,6 +1,6 @@
 // ============================================
-// Root Layout - App entry point
-// Wraps the app with WorkoutProvider & Stack nav
+// Root Layout - Application entry point
+// V2 navigation: Root Stack + Drawer + Tabs
 // ============================================
 
 import { WorkoutProvider } from "@/src/context/WorkoutContext";
@@ -10,6 +10,7 @@ import { StatusBar } from "expo-status-bar";
 export default function RootLayout() {
   return (
     <WorkoutProvider>
+      {/* Root Stack navigator */}
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: "#0D0D0D" },
@@ -18,10 +19,10 @@ export default function RootLayout() {
           contentStyle: { backgroundColor: "#0D0D0D" },
         }}
       >
-        {/* Home screen - no header (custom header inside) */}
-        <Stack.Screen name="index" options={{ headerShown: false }} />
+        {/* Main app shell: Drawer + Tabs (no header here) */}
+        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
 
-        {/* Add workout screen */}
+        {/* Add workout screen (modal over the shell) */}
         <Stack.Screen
           name="add-workout"
           options={{
@@ -30,7 +31,7 @@ export default function RootLayout() {
           }}
         />
 
-        {/* Workout details screen */}
+        {/* Workout details screen (push on top of shell) */}
         <Stack.Screen
           name="workout/[id]"
           options={{
@@ -38,6 +39,8 @@ export default function RootLayout() {
           }}
         />
       </Stack>
+
+      {/* Global status bar styling */}
       <StatusBar style="light" />
     </WorkoutProvider>
   );
