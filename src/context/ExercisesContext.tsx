@@ -14,6 +14,10 @@ import React, {
 } from "react";
 import type { Exercise } from "../constants/theme";
 import { fetchExercises, fetchExerciseById } from "../services/api";
+import {
+  loadFavoriteExerciseIds,
+  saveFavoriteExerciseIds,
+} from "../storage/favoritesStorage";
 
 // ------- State type -------
 interface ExercisesState {
@@ -28,6 +32,7 @@ type ExercisesAction =
   | { type: "LOAD_START" }
   | { type: "LOAD_SUCCESS"; payload: Exercise[] }
   | { type: "LOAD_ERROR"; payload: string }
+  | { type: "SET_FAVORITES"; payload: string[] }
   | { type: "TOGGLE_FAVORITE"; payload: string }
   | { type: "CLEAR_ERROR" };
 
@@ -51,6 +56,8 @@ function exercisesReducer(
       return { ...state, isLoading: false, exercises: action.payload };
     case "LOAD_ERROR":
       return { ...state, isLoading: false, error: action.payload };
+    case "SET_FAVORITES":
+      return { ...state, favorites: action.payload };
     case "TOGGLE_FAVORITE": {
       const id = action.payload;
       const isFavorite = state.favorites.includes(id);
@@ -94,6 +101,11 @@ export function ExercisesProvider({
   // Load exercises once on app startup.
   useEffect(() => {
     loadExercises();
+    // Load favorites from storage independently.
+    void (async () => {
+      const storedFavorites = await loadFavoriteExerciseIds();
+      dispatch({ type: "SET_FAVORITES", payload: storedFavorites });
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -123,6 +135,15 @@ export function ExercisesProvider({
 
   const toggleFavorite = (id: string) => {
     dispatch({ type: "TOGGLE_FAVORITE", payload: id });
+
+    // Persist the updated favorites asynchronously.
+    // We compute the next favorites from the current state
+    // instead of relying on the reducer's result.
+    const isCurrentlyFavorite = state.favorites.includes(id);
+    const nextFavorites = isCurrentlyFavorite
+      ? state.favorites.filter((favId) => favId !== id)
+      : [...state.favorites, id];
+    void saveFavoriteExerciseIds(nextFavorites);
   };
 
   const isFavorite = (id: string) => state.favorites.includes(id);
