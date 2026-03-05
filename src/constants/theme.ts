@@ -93,3 +93,15 @@ export interface Workout {
   notes: string;
   createdAt: string; // ISO string
 }
+
+// Exercise catalogue types (V2)
+export type ExerciseDifficulty = "Beginner" | "Intermediate" | "Advanced";
+
+export interface Exercise {
+  id: string;
+  name: string;
+  category: string;
+  difficulty: ExerciseDifficulty;
+  description: string;
+  duration: number; // in minutes
+}
