@@ -83,7 +83,7 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
     try {
       const workouts = await loadWorkouts();
       dispatch({ type: "LOAD_SUCCESS", payload: workouts });
-    } catch (error) {
+    } catch {
       dispatch({
         type: "LOAD_ERROR",
         payload: "Failed to load your workouts",
@@ -96,7 +96,7 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
     try {
       const updated = await storageAddWorkout(workout);
       dispatch({ type: "ADD_WORKOUT", payload: updated });
-    } catch (error) {
+    } catch {
       dispatch({ type: "LOAD_ERROR", payload: "Failed to add workout" });
     }
   };
@@ -106,7 +106,7 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
     try {
       const updated = await storageDeleteWorkout(id);
       dispatch({ type: "DELETE_WORKOUT", payload: updated });
-    } catch (error) {
+    } catch {
       dispatch({ type: "LOAD_ERROR", payload: "Failed to delete workout" });
     }
   };

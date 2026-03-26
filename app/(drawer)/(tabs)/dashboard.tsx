@@ -8,14 +8,26 @@
 
 import React from "react";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
-import { useWorkouts } from "@/src/context/WorkoutContext";
+import { useAuth } from "@/src/context/AuthContext";
 import { COLORS, SIZES } from "@/src/constants/theme";
+import { fetchStats } from "@/src/services/api";
 
 export default function DashboardScreen() {
-  const { state } = useWorkouts();
+  const { token } = useAuth();
+  const [totalSessions, setTotalSessions] = React.useState(0);
+  const [totalMinutes, setTotalMinutes] = React.useState(0);
+  const [totalKm, setTotalKm] = React.useState(0);
 
-  const totalSessions = state.workouts.length;
-  const totalMinutes = state.workouts.reduce((sum, w) => sum + w.duration, 0);
+  React.useEffect(() => {
+    const load = async () => {
+      if (!token) return;
+      const stats = await fetchStats(token);
+      setTotalSessions(stats.totalSessions);
+      setTotalMinutes(Math.floor(stats.totalDurationSeconds / 60));
+      setTotalKm(Number((stats.totalDistanceMeters / 1000).toFixed(2)));
+    };
+    void load();
+  }, [token]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,6 +46,10 @@ export default function DashboardScreen() {
           <Text style={styles.cardLabel}>Total Minutes</Text>
           <Text style={styles.cardValue}>{totalMinutes}</Text>
         </View>
+      </View>
+      <View style={[styles.card, { marginTop: SIZES.md }]}>
+        <Text style={styles.cardLabel}>Total Distance (km)</Text>
+        <Text style={styles.cardValue}>{totalKm}</Text>
       </View>
 
       <View style={styles.hintBox}>

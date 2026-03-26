@@ -6,8 +6,14 @@
 // ============================================
 
 import { Drawer } from "expo-router/drawer";
+import { Redirect } from "expo-router";
+import { useAuth } from "@/src/context/AuthContext";
 
 export default function DrawerLayout() {
+  const { token, isBootstrapping } = useAuth();
+  if (isBootstrapping) return null;
+  if (!token) return <Redirect href="/(auth)/login" />;
+
   return (
     <Drawer
       screenOptions={{

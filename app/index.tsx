@@ -6,7 +6,10 @@
 // ============================================
 
 import { Redirect } from "expo-router";
+import { useAuth } from "@/src/context/AuthContext";
 
 export default function IndexRoute() {
-  return <Redirect href="/(drawer)/(tabs)/dashboard" />;
+  const { token, isBootstrapping } = useAuth();
+  if (isBootstrapping) return null;
+  return <Redirect href={token ? "/(drawer)/(tabs)/dashboard" : "/(auth)/login"} />;
 }

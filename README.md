@@ -1,97 +1,108 @@
-# 🏋️ HealthSphere Mobile
+# HealthSphere v3
 
-A Health & Fitness mobile application built with **React Native** and **Expo**. Track your workout sessions, view history, and monitor your fitness progress.
+Complete mobile fitness tracking app with React Native (Expo) + Express API.
 
-## 📱 Features
+## Features
 
-- ➕ **Add Workouts** — Log your training sessions (type, duration, intensity, notes)
-- 📋 **Workout List** — View all sessions with FlatList
-- 📄 **Workout Details** — See full details of each session
-- 🗑️ **Delete Workouts** — Remove sessions with confirmation
-- 💾 **Data Persistence** — AsyncStorage keeps your data after restart
-- 🌙 **Dark Theme** — Modern dark UI with red accents
+- Authentication: register/login, JWT token storage, protected routes
+- Outdoor tracking: location permission, start/pause/resume/stop session
+- GPS data: coordinate recording and distance calculation
+- Camera: take and attach a training photo to a session
+- Dashboard: total sessions, total duration, total distance
+- History: filterable sessions list
+- Exercises catalogue: fetched from backend API + favorites persistence
 
-## 🏗️ Architecture
+## Stack
 
+- Mobile: Expo, React Native, Expo Router, TypeScript, AsyncStorage
+- Native modules: `expo-location`, `expo-camera`
+- Backend: Node.js, Express, JWT, bcrypt, JSON file persistence
+- Build: EAS (`eas.json` included)
+
+## Project Structure
+
+```txt
+app/                Expo Router routes
+src/                Mobile business logic (context, services, components)
+backend/            Express API
+  src/routes/       Auth, sessions, exercises
+  src/services/     DB + domain services
 ```
-src/
- ├── screens/           # App screens (Home, AddWorkout, WorkoutDetails)
- ├── components/        # Reusable UI components
- ├── context/           # Context API for global state (useReducer)
- ├── storage/           # AsyncStorage persistence layer
- └── constants/         # Theme colors, sizes, types
 
-app/
- ├── _layout.tsx        # Root layout with Stack Navigator
- ├── index.tsx          # Home route
- ├── add-workout.tsx    # Add workout route
- └── workout/[id].tsx   # Workout details (dynamic route)
-```
+## Run Locally
 
-## 🛠️ Tech Stack
-
-| Technology | Usage |
-|---|---|
-| React Native | Mobile framework |
-| Expo (managed) | Development environment |
-| Expo Router | File-based navigation (Stack) |
-| AsyncStorage | Local data persistence |
-| Context API + useReducer | State management |
-| TypeScript | Type safety |
-| StyleSheet | Styling |
-
-## 📦 Installation
-
-### Prerequisites
-- Node.js (v18+)
-- npm or yarn
-- Expo Go app on your phone (for testing)
-
-### Steps
+### 1) Backend
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/Ibrahim-Lmlilas/HealthSphere-Mobile.git
-
-# 2. Navigate to project
-cd HealthSphere-Mobile
-
-# 3. Install dependencies
+cd backend
 npm install
+cp .env.example .env
+npm run dev
+```
 
-# 4. Start the app
+Default backend URL: `http://localhost:3333`
+
+### 2) Mobile
+
+From project root:
+
+```bash
+npm install
+cp .env.example .env
+```
+
+Set your computer LAN IP in `.env`:
+
+```env
+EXPO_PUBLIC_API_BASE_URL=http://192.168.X.X:3333
+```
+
+Then start Expo:
+
+```bash
 npx expo start
 ```
 
-### Run on device
-- **Android**: Press `a` or scan QR code with Expo Go
-- **iOS**: Press `i` or scan QR code with Camera app
-- **Web**: Press `w` to open in browser
+## API Summary
 
-## 📂 Data Model
+- Public:
+  - `POST /auth/register`
+  - `POST /auth/login`
+  - `GET /exercises`
+  - `GET /exercises/:id`
+  - `GET /health`
+- Protected (Bearer token):
+  - `GET /auth/me`
+  - `POST /sessions`
+  - `GET /sessions`
+  - `PATCH /sessions/:id/pause`
+  - `PATCH /sessions/:id/resume`
+  - `PATCH /sessions/:id/stop`
+  - `POST /sessions/:id/coordinates`
+  - `POST /sessions/:id/photo`
+  - `GET /sessions/stats`
 
-```typescript
-interface Workout {
-  id: string;               // Unique identifier
-  activity: ActivityType;    // Running, Cycling, Swimming, etc.
-  duration: number;          // Duration in minutes
-  intensity: IntensityLevel; // Low, Medium, High
-  date: string;              // ISO date string
-  notes: string;             // Optional notes
-  createdAt: string;         // Creation timestamp
-}
+## EAS Android Build
+
+```bash
+npm install -g eas-cli
+eas login
+eas build:configure
+eas build -p android --profile production
 ```
 
-## 🔀 Git Branching
+## Test Checklist
 
-- `main` — Production branch
-- `develop` — Development branch
-- `feature/*` — Feature branches
+- Register and login successfully
+- Reopen app and stay authenticated (token persisted)
+- Start tracking and verify distance increases when moving
+- Pause/resume tracking
+- Stop session and verify it appears in history
+- Capture photo and verify session has linked photo
+- Check dashboard totals update after completed sessions
 
-## 👤 Author
+## Workflow Recommendation
 
-**Ibrahim Lmlilas**
-
-## 📄 License
-
-This project is part of a pedagogical brief — **Concepteur Développeur d'Applications (2023)**.
+- Branching: `main`, `develop`, `feature/*`
+- One feature branch per user story
+- Pull Request mandatory with review before merge

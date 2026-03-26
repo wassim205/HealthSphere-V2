@@ -67,7 +67,7 @@ export default function AddWorkoutScreen() {
 
       await addWorkout(newWorkout);
       router.back();
-    } catch (error) {
+    } catch {
       Alert.alert("Error", "Failed to save workout. Please try again.");
     } finally {
       setIsSubmitting(false);

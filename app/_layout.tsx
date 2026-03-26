@@ -10,48 +10,44 @@
 import { WorkoutProvider } from "@/src/context/WorkoutContext";
 import { ExercisesProvider } from "@/src/context/ExercisesContext";
 import { UserProvider } from "@/src/context/UserContext";
+import { AuthProvider } from "@/src/context/AuthContext";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
 export default function RootLayout() {
   return (
-    <UserProvider>
-      <ExercisesProvider>
-        <WorkoutProvider>
-          {/* Root Stack navigator */}
-          <Stack
-            screenOptions={{
-              headerStyle: { backgroundColor: "#0D0D0D" },
-              headerTintColor: "#FFFFFF",
-              headerTitleStyle: { fontWeight: "700" },
-              contentStyle: { backgroundColor: "#0D0D0D" },
-            }}
-          >
-            {/* Main app shell: Drawer + Tabs (no header here) */}
-            <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-
-            {/* Add workout screen (modal over the shell) */}
-            <Stack.Screen
-              name="add-workout"
-              options={{
-                title: "Add Workout",
-                presentation: "modal",
+    <AuthProvider>
+      <UserProvider>
+        <ExercisesProvider>
+          <WorkoutProvider>
+            <Stack
+              screenOptions={{
+                headerStyle: { backgroundColor: "#0D0D0D" },
+                headerTintColor: "#FFFFFF",
+                headerTitleStyle: { fontWeight: "700" },
+                contentStyle: { backgroundColor: "#0D0D0D" },
               }}
-            />
-
-            {/* Workout details screen (push on top of shell) */}
-            <Stack.Screen
-              name="workout/[id]"
-              options={{
-                title: "Workout Details",
-              }}
-            />
-          </Stack>
-
-          {/* Global status bar styling */}
-          <StatusBar style="light" />
-        </WorkoutProvider>
-      </ExercisesProvider>
-    </UserProvider>
+            >
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="add-workout"
+                options={{
+                  title: "Add Workout",
+                  presentation: "modal",
+                }}
+              />
+              <Stack.Screen
+                name="workout/[id]"
+                options={{
+                  title: "Workout Details",
+                }}
+              />
+            </Stack>
+            <StatusBar style="light" />
+          </WorkoutProvider>
+        </ExercisesProvider>
+      </UserProvider>
+    </AuthProvider>
   );
 }
