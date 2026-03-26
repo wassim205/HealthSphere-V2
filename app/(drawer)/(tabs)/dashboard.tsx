@@ -21,10 +21,15 @@ export default function DashboardScreen() {
   React.useEffect(() => {
     const load = async () => {
       if (!token) return;
-      const stats = await fetchStats(token);
-      setTotalSessions(stats.totalSessions);
-      setTotalMinutes(Math.floor(stats.totalDurationSeconds / 60));
-      setTotalKm(Number((stats.totalDistanceMeters / 1000).toFixed(2)));
+      try {
+        const stats = await fetchStats(token);
+        setTotalSessions(stats.totalSessions);
+        setTotalMinutes(Math.floor(stats.totalDurationSeconds / 60));
+        setTotalKm(Number((stats.totalDistanceMeters / 1000).toFixed(2)));
+      } catch (error) {
+        console.error("Failed to load stats:", error);
+        // Stats will remain at default values (0) if fetch fails
+      }
     };
     void load();
   }, [token]);

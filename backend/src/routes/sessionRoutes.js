@@ -29,9 +29,13 @@ router.post("/", (req, res) => {
   res.status(201).json(session);
 });
 
-router.get("/stats", (req, res) => {
-  const stats = getStats(req.user.id);
-  res.json(stats);
+router.get("/stats", (req, res, next) => {
+  try {
+    const stats = getStats(req.user.id);
+    return res.json(stats);
+  } catch (error) {
+    return next(error);
+  }
 });
 
 router.get("/:id", (req, res) => {
